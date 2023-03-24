@@ -38,7 +38,8 @@ ui <- fluidPage(
                                    numericInput("carb", "Carbon emission score", value = 0),
                                    div(class = "row", style = "display: flex;",
                                        actionButton("add", "Add new"),
-                                       div(style = "padding-left: 15px;", actionButton("edit", "Confirm Edit")))
+                                       div(style = "padding-left: 15px;", actionButton("edit", "Confirm Edit")),
+                                       div(style = "padding-left: 15px;", actionButton("delete", "Delete Record")))
                                    ),
                           
                           tabPanel("Data",
@@ -46,7 +47,7 @@ ui <- fluidPage(
     
 )
 
-
+# Important to add session to server function for updateXInput to work ####
 server <- function(input, output, session) {
   
   carsDT <- function() {
@@ -144,27 +145,27 @@ server <- function(input, output, session) {
     
     updateTextInput(session, "model", value = if (input$recNum == "(new)") {""} else {mtcars2$model[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "mpg", value = if (input$recNum == "(new)") {0} else { mtcars2$mpg[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "mpg", value = if (input$recNum == "(new)") {0} else {mtcars2$mpg[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "cyl", value = if (input$recNum == "(new)") {0} else { mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "cyl", value = if (input$recNum == "(new)") {0} else {mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "disp", value = if (input$recNum == "(new)") {0} else { mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "disp", value = if (input$recNum == "(new)") {0} else {mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "hp", value = if (input$recNum == "(new)") {0} else { mtcars2$hp[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "hp", value = if (input$recNum == "(new)") {0} else {mtcars2$hp[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "drat", value = if (input$recNum == "(new)") {0} else { mtcars2$drat[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "drat", value = if (input$recNum == "(new)") {0} else {mtcars2$drat[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "wt", value = if (input$recNum == "(new)") {0} else { mtcars2$wt[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "wt", value = if (input$recNum == "(new)") {0} else {mtcars2$wt[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "qsec", value = if (input$recNum == "(new)") {0} else { mtcars2$qsec[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "qsec", value = if (input$recNum == "(new)") {0} else {mtcars2$qsec[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "vs", value = if (input$recNum == "(new)") {0} else { mtcars2$vs[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "vs", value = if (input$recNum == "(new)") {0} else {mtcars2$vs[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "am", value = if (input$recNum == "(new)") {0} else { mtcars2$am[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "am", value = if (input$recNum == "(new)") {0} else {mtcars2$am[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "gear", value = if (input$recNum == "(new)") {0} else { mtcars2$gear[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "gear", value = if (input$recNum == "(new)") {0} else {mtcars2$gear[mtcars2$rec_no == as.integer(input$recNum)]})
     
-    updateNumericInput(session, "carb", value = if (input$recNum == "(new)") {0} else { mtcars2$carb[mtcars2$rec_no == as.integer(input$recNum)]})
+    updateNumericInput(session, "carb", value = if (input$recNum == "(new)") {0} else {mtcars2$carb[mtcars2$rec_no == as.integer(input$recNum)]})
     
   })
   
@@ -192,6 +193,23 @@ server <- function(input, output, session) {
       mtcars2 <<- mtcars2[mtcars2$rec_no != editRecord$rec_no, ] %>%
         rbind(editRecord) %>%
         arrange(rec_no)
+      
+      output$carsData <- renderDT(server = FALSE, {
+        carsDT()
+      })
+      
+      updateSelectInput(session, "recNum", label = NULL, choices = c("(new)", mtcars2$rec_no))
+      
+    }
+    
+  })
+  
+  # When you save an edit to a form ####
+  observeEvent(input$delete, {
+    
+    if (input$recNum != "(new)") {
+      
+      mtcars2 <<- mtcars2[mtcars2$rec_no != as.integer(input$recNum), ] 
       
       output$carsData <- renderDT(server = FALSE, {
         carsDT()
