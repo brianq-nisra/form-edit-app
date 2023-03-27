@@ -35,7 +35,7 @@ ui <- fluidPage(
                                    numericInput("vs", "Engine (0 = V-shaped, 1 = straight)", value = 0, min = 0, max = 1),
                                    numericInput("am", "Transmission (0 = automatic, 1 = manual)", value = 0, min = 0, max = 1),
                                    numericInput("gear", "Number of forward gears", value = 0),
-                                   numericInput("carb", "Carbon emission score", value = 0),
+                                   numericInput("carb", "Number of carburetors", value = 0),
                                    div(class = "row", style = "display: flex;",
                                        actionButton("add", "Add new"),
                                        div(style = "padding-left: 15px;", actionButton("edit", "Confirm Edit")),
