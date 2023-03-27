@@ -54,14 +54,12 @@ server <- function(input, output, session) {
     datatable(mtcars2,
               rownames = FALSE,
               escape = FALSE,
-              extensions = c("FixedColumns"),
               options = list(
                 paging = FALSE,
                 searching = TRUE,
                 scrollX = TRUE,
                 scrollY = "800px",
-                fixedColumns = list(leftColumns = 1), 
-                autoWidth = TRUE,
+                autoWidth = FALSE,
                 ordering = TRUE,
                 dom = "Bfrtip"),
               class = "display")
@@ -100,7 +98,7 @@ server <- function(input, output, session) {
     })
     
     # Add new item to drop down list
-    updateSelectInput(session, "recNum", choices = c("(new)", mtcars2$rec_no))
+    updateSelectInput(session, "recNum", choices = c("(new)", mtcars2$rec_no), selected = max(mtcars2$rec_no))
     
   })
   
