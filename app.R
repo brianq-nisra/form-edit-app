@@ -111,7 +111,7 @@ server <- function(input, output, session) {
     
       updateSelectInput(session,
                         "recNum",
-                        selected = c("(new)", 1:nrow(mtcars2))[which(c("(new)", 1:nrow(mtcars2)) == input$recNum) + 1])
+                        selected = c("(new)", mtcars2$rec_no)[which(c("(new)", mtcars2$rec_no) == input$recNum) + 1])
       
     } else {
       
@@ -128,7 +128,7 @@ server <- function(input, output, session) {
     
       updateSelectInput(session,
                         "recNum",
-                        selected = c("(new)", 1:nrow(mtcars2))[which(c("(new)", 1:nrow(mtcars2)) == input$recNum) - 1])
+                        selected = c("(new)", mtcars2$rec_no)[which(c("(new)", mtcars2$rec_no) == input$recNum) - 1])
       
     } else {
       
@@ -141,40 +141,15 @@ server <- function(input, output, session) {
   # Any time the selectInput changes the rest of the form will update ####
   observeEvent(input$recNum, {
     
-    updateTextInput(session, "model", value = if (input$recNum == "(new)") {""} else {mtcars2$model[mtcars2$rec_no == as.integer(input$recNum)]})
+    for (var in names(mtcars2)) {
 
-    updateNumericInput(session, "mpg", value = if (input$recNum == "(new)") {0} else {mtcars2$mpg[mtcars2$rec_no == as.integer(input$recNum)]})
+      if (var == "model") {
+        updateTextInput(session, "model", value = if (input$recNum == "(new)") {""} else {mtcars2$model[mtcars2$rec_no == as.integer(input$recNum)]})
+      } else {
+        updateNumericInput(session, var, value = if(input$recNum == "(new)") {0} else {mtcars2[[var]][mtcars2$rec_no == as.integer(input$recNum)]})
+      }
 
-    updateNumericInput(session, "cyl", value = if (input$recNum == "(new)") {0} else {mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "disp", value = if (input$recNum == "(new)") {0} else {mtcars2$cyl[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "hp", value = if (input$recNum == "(new)") {0} else {mtcars2$hp[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "drat", value = if (input$recNum == "(new)") {0} else {mtcars2$drat[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "wt", value = if (input$recNum == "(new)") {0} else {mtcars2$wt[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "qsec", value = if (input$recNum == "(new)") {0} else {mtcars2$qsec[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "vs", value = if (input$recNum == "(new)") {0} else {mtcars2$vs[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "am", value = if (input$recNum == "(new)") {0} else {mtcars2$am[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "gear", value = if (input$recNum == "(new)") {0} else {mtcars2$gear[mtcars2$rec_no == as.integer(input$recNum)]})
-
-    updateNumericInput(session, "carb", value = if (input$recNum == "(new)") {0} else {mtcars2$carb[mtcars2$rec_no == as.integer(input$recNum)]})
-    
-    # Could replace all of above with for loop:
-    # for (var in names(mtcars2)) {
-    #   
-    #   if (var == "model") {
-    #     updateTextInput(session, "model", value = if (input$recNum == "(new)") {""} else {mtcars2$model[mtcars2$rec_no == as.integer(input$recNum)]})
-    #   } else {
-    #     updateNumericInput(session, var, value = if(input$recNum == "(new)") {0} else {mtcars2[[var]][mtcars2$rec_no == as.integer(input$recNum)]})
-    #   }
-    #   
-    # }
+    }
     
   })
   
