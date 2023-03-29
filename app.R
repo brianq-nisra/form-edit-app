@@ -81,6 +81,7 @@ server <- function(input, output, session) {
     # Single row data frame
     newRecord <- data.frame(rec_no = max(mtcars2$rec_no) + 1,
                             model = input$model,
+                            colour = input$colour,
                             mpg = input$mpg,
                             cyl = input$cyl,
                             disp = input$disp,
@@ -164,6 +165,7 @@ server <- function(input, output, session) {
       
       editRecord <- data.frame(rec_no = as.integer(input$recNum),
                                model = input$model,
+                               colour = input$colour,
                                mpg = input$mpg,
                                cyl = input$cyl,
                                disp = input$disp,
