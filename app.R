@@ -22,9 +22,9 @@ ui <- fluidPage(
                                    
                                    p("Select record number to edit or select new to create new one"),
                                    div(class = "row", style = "display: flex;",
-                                       div(style = "padding-left: 15px;", actionLink("prev", "<<")),
+                                       div(style = "padding:6px 0 0 15px;", actionLink("prev", "<<")),
                                        div(style = "padding:0 15px 0 15px;", selectInput("recNum", label = NULL, choices = c("(new)", mtcars2$rec_no), selected = "(new)", width = "80px")),
-                                       div(actionLink("next1", ">>")),
+                                       div(style = "padding-top: 6px;", actionLink("next1", ">>")),
                                        div(style = "padding-left: 15px;", textInput("search", label = NULL, placeholder = "Search"))),
                                    textInput("model", "Make and model"),
                                    textInput("colour", "Colour"),
