@@ -5,8 +5,9 @@ p_load("shiny", "DT", "dplyr")
 
 mtcars2 <- mtcars %>%
   mutate(model = rownames(.),
-         rec_no = 1:nrow(.)) %>%
-  select(rec_no, model, everything())
+         rec_no = 1:nrow(.),
+         colour = rep_len(c("Red", "Blue", "Green", "Black"), length.out = nrow(.))) %>%
+  select(rec_no, model, colour, everything())
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -23,8 +24,10 @@ ui <- fluidPage(
                                    div(class = "row", style = "display: flex;",
                                        div(style = "padding-left: 15px;", actionLink("prev", "<<")),
                                        div(style = "padding:0 15px 0 15px;", selectInput("recNum", label = NULL, choices = c("(new)", mtcars2$rec_no), selected = "(new)", width = "80px")),
-                                       div(actionLink("next1", ">>"))),
+                                       div(actionLink("next1", ">>")),
+                                       div(style = "padding-left: 15px;", textInput("search", label = NULL, placeholder = "Search"))),
                                    textInput("model", "Make and model"),
+                                   textInput("colour", "Colour"),
                                    numericInput("mpg", "Miles per gallon", value = 0),
                                    numericInput("cyl", "Number of cylinders", value = 0),
                                    numericInput("disp", "Displacement (cu.in)", value = 0, step = 0.1),
@@ -143,8 +146,8 @@ server <- function(input, output, session) {
     
     for (var in names(mtcars2)) {
 
-      if (var == "model") {
-        updateTextInput(session, "model", value = if (input$recNum == "(new)") {""} else {mtcars2$model[mtcars2$rec_no == as.integer(input$recNum)]})
+      if (var %in% c("model", "colour")) {
+        updateTextInput(session, var, value = if (input$recNum == "(new)") {""} else {mtcars2[[var]][mtcars2$rec_no == as.integer(input$recNum)]})
       } else {
         updateNumericInput(session, var, value = if(input$recNum == "(new)") {0} else {mtcars2[[var]][mtcars2$rec_no == as.integer(input$recNum)]})
       }
@@ -204,6 +207,49 @@ server <- function(input, output, session) {
     }
     
   })
+  
+  # When you type something in search ####
+  observeEvent(input$search, {
+    
+    # When search box isn't blank perform a while loop to return the first row of the data
+    # where the search condition is met
+    if (input$search != "") {
+      
+      # initially set looping variables
+      foundMatch <- FALSE
+      i <- 1
+      
+      # Loop while foundMatch is false and i is less than number of rows
+      while (foundMatch == FALSE & i <= nrow(mtcars2)) {
+      
+        # Transform row of data into single character string
+         r <- tolower(paste(as.character(mtcars2[i, ]), collapse = " "))
+         
+         # Use grepl to search for input in character string
+         if (grepl(tolower(input$search), r)) {
+           foundMatch <- TRUE
+         } else {
+          i <- i + 1
+         }
+         
+      }
+      
+      # If match is found update the numeric input to 
+      if (foundMatch == TRUE) {
+        
+        updateNumericInput(session, "recNum", value = mtcars2$rec_no[i])
+        
+      }
+        
+    } else {
+      
+      # If search term is deleted go back to blank form
+      updateNumericInput(session, "recNum", value = "(new)")
+      
+    }
+    
+  }) 
+  
   
 }
 
